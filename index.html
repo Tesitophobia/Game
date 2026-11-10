@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111715">
+<title>AFTERSHOCK — Evacuación</title>
+<link rel="stylesheet" href="css/style.css">
+<style>html,body{margin:0;min-height:100%;background:#111715}body{min-height:100vh}</style>
+</head>
+<body>
+<div id="aftershock-root">
+<div class="shell">
+  <header class="topbar">
+    <div class="brand"><span class="mark">A</span><div><b>AFTERSHOCK</b><small>PROTOCOLO DE EVACUACIÓN</small></div></div>
+    <div class="building-status"><i></i> EDIFICIO 07 <span>·</span> ALERTA SÍSMICA</div>
+    <button id="soundBtn" class="sound" aria-label="Activar o desactivar sonido">♫ <span>SONIDO</span></button>
+  </header>
+
+  <main class="game-layout">
+    <section class="game-frame" id="gameFrame">
+      <canvas id="game" width="960" height="600" aria-label="Juego de evacuación durante un terremoto"></canvas>
+      <div class="vignette"></div>
+      <div class="scanlines"></div>
+      <nav class="touch-controls" aria-label="Controles táctiles del juego">
+        <div class="touch-movement">
+          <button type="button" data-control="left" aria-label="Mover a la izquierda">◀</button>
+          <button type="button" data-control="right" aria-label="Mover a la derecha">▶</button>
+        </div>
+        <div class="touch-actions">
+          <button type="button" data-control="run" aria-label="Correr">CORRER</button>
+          <button type="button" data-control="duck" aria-label="Agacharse">↓</button>
+          <button type="button" data-control="jump" aria-label="Saltar">↑</button>
+          <button type="button" data-control="interact" aria-label="Auxiliar">E</button>
+        </div>
+      </nav>
+
+      <section id="gameHud" class="game-hud hidden">
+        <div class="hud-top">
+          <div class="hud-chip floor-chip"><small>UBICACIÓN</small><b id="floorLabel">PISO 05 / 05</b><div class="floor-track"><i id="floorBar"></i></div></div>
+          <div class="hud-chip timer-chip"><small>TIEMPO PARA EL COLAPSO</small><b id="time">02:18</b><div class="time-track"><i id="timeBar"></i></div></div>
+          <div class="hud-chip lives-chip"><small>ESTADO FÍSICO</small><b id="lives" class="hearts">♥ ♥ ♥ ♥</b></div>
+          <div class="hud-chip helmet-chip"><small>CASCO</small><b id="helmet" class="helmet-state">NO EQUIPADO</b></div>
+          <div class="hud-chip rescue-chip"><small>RESCATADOS</small><b id="rescued">00 / 03</b></div>
+        </div>
+        <div id="trainingGuide" class="training-guide hidden">
+          <small>ENTRENAMIENTO DE CAMPO</small>
+          <b id="trainingTitle">01 / MUÉVETE</b>
+          <span id="trainingText">Usa A y D para caminar. Busca el hueco de las escaleras.</span>
+        </div>
+        <div class="hud-bottom">
+          <div class="objective"><span class="objective-dot"></span><span><b>OBJETIVO</b> Baja por las escaleras hasta la salida.</span></div>
+          <div class="control-hints"><kbd>A</kbd><kbd>D</kbd> MOVER <kbd>ESP</kbd> SALTAR <kbd>SHIFT</kbd> CORRER <kbd>E</kbd> AUXILIAR <kbd>ESC</kbd> PAUSA</div>
+        </div>
+      </section>
+
+      <section id="menu" class="screen menu-screen">
+        <div class="menu-copy">
+          <div class="eyebrow">SIMULACIÓN DE EMERGENCIA / 07-A</div>
+          <h1>NO MIRES<br><em>ATRÁS.</em></h1>
+          <p>El edificio está cediendo. Cruza habitaciones dañadas, esquiva los peligros y encuentra las escaleras para llegar a la salida.</p>
+          <label for="difficulty">NIVEL DE RIESGO</label>
+          <select id="difficulty">
+            <option value="easy">01 — CONTROLADO · 3 PISOS</option>
+            <option value="steady">02 — ATENCIÓN · 4 PISOS</option>
+            <option value="normal" selected>03 — INESTABLE · 5 PISOS</option>
+            <option value="severe">04 — CRÍTICO · 6 PISOS</option>
+            <option value="hard">05 — COLAPSO · 7 PISOS</option>
+          </select>
+          <button id="playBtn" class="primary">INICIAR EVACUACIÓN <span>↗</span></button>
+          <button id="trainingBtn" class="secondary">JUGAR ENTRENAMIENTO <span>◎</span></button>
+          <div id="difficultyMeta" class="difficulty-meta">5 PISOS · 140 SEGUNDOS · 4 VIDAS</div>
+          <div class="menu-hint">A / D MOVER · ESPACIO SALTAR · SHIFT CORRER · E AUXILIAR</div>
+        </div>
+        <div class="menu-art">
+          <div id="artLabel" class="art-label">BLOQUE RESIDENCIAL<br>07 / 05 PISOS</div>
+          <div id="artBuilding" class="art-building">
+            <div class="art-floor"><i></i><i></i><i></i></div><div class="art-floor"><i></i><i></i><i></i></div>
+            <div class="art-floor"><i></i><i></i><i></i></div><div class="art-floor"><i></i><i></i><i></i></div>
+            <div class="art-floor"><i></i><i></i><i></i></div><div class="art-exit">SALIDA</div>
+          </div>
+          <div class="art-caption">ESTRUCTURA INESTABLE<br>EVACUACIÓN INMEDIATA</div>
+        </div>
+      </section>
+
+      <section id="pause" class="screen modal hidden"><div class="modal-card"><div class="eyebrow">SEÑAL INTERRUMPIDA</div><h2>PAUSA</h2><p>Respira. El edificio no va a esperar.</p><button id="resumeBtn" class="primary">CONTINUAR</button><button id="restartPause" class="ghost">REINICIAR PARTIDA</button></div></section>
+      <section id="result" class="screen modal hidden"><div class="modal-card"><div class="eyebrow" id="resultEyebrow">INFORME DE EVACUACIÓN</div><h2 id="resultTitle">EVACUADO</h2><div id="resultStats" class="result-stats"></div><button id="againBtn" class="primary">VOLVER A JUGAR</button><button id="homeBtn" class="ghost">MENÚ PRINCIPAL</button></div></section>
+      <div id="toast" class="toast hidden" role="status" aria-live="polite"><span class="toast-mark">!</span><span id="toastText"></span></div>
+    </section>
+  </main>
+  <footer><span>AFTERSHOCK // BUILDING 07</span><span>PIXEL ART EVACUATION EXPERIENCE</span><span>V 09.2</span></footer>
+</div>
+</div>
+<script src="js/config.js"></script><script src="js/art.js"></script><script src="js/game.js"></script>
+</body>
+</html>
